@@ -36,14 +36,16 @@ export const dynamicDashboardData = [
         type: "categories",
         data: categoriesData,
     },
+  
     {
         type: "sponser",
         data: [{
-            id: 1,
-            image_uri: "https://rukminim2.flixcart.com/fk-p-flap/820/180/image/c3ce8a2713d28788.jpeg?q=60",
+            id: 2,
+            image_uri: "https://rukminim2.flixcart.com/fk-p-flap/820/180/image/b0f876bac25c50b6.jpg?q=60",
             path: '/sponser1'
         }]
     },
+    
     {
         type: "horizontal_list",
         title: "Best Deals",
@@ -68,11 +70,11 @@ export const dynamicDashboardData = [
         ]
     },
     {
-        type: "sponser",
-        data: [{
-            id: 1,
-            image_uri: "https://rukminim2.flixcart.com/fk-p-flap/820/180/image/b0f876bac25c50b6.jpg?q=60",
-            path: '/sponser1'
+        type:"sponser",
+        data:[{
+            id:3,
+            image_uri:"https://rukminim2.flixcart.com/fk-p-flap/820/180/image/c3ce8a2713d28788.jpeg?q=60",
+            path:'/sponser2'
         }]
     },
     {
