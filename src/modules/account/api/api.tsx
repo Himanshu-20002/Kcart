@@ -17,7 +17,9 @@ export const loginOrSignup = async (phone:string,address:string)=>{
 export const getOrderByUserId = async (userId:string)=>{
     try{
         const response = await axios.get(`${BASE_URL}/order/${userId}`)
+        console.log(response.data.orders)
         return response.data.orders
+
     }catch(error){
         console.log(error,"error in get order by user id")
         return null

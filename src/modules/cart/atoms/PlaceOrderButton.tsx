@@ -1,15 +1,56 @@
-import { View, Text, StyleSheet, TouchableOpacity, ActivityIndicator } from 'react-native'
+import { View, Text, StyleSheet, TouchableOpacity, ActivityIndicator, Alert } from 'react-native'
 import React from 'react'
 import { RFValue } from 'react-native-responsive-fontsize'
 import { useAppSelector } from '@store/reduxHook'
-import { selectTotalPriceInCart } from '../api/slice'
+import { selectCartItems, selectTotalPriceInCart } from '../api/slice'
 import LoginModel from '@modules/account/molecules/LoginModel'
-
+import { createOrder, createTransaction } from '../api/paygateway'
 
 const PlaceOrderButton = () => {
     const price = useAppSelector(selectTotalPriceInCart)
+    const user = useAppSelector(state => state.account.user)
+    const cart = useAppSelector(selectCartItems);
     const [isVisible, setIsVisible] = React.useState(false)
     const [loading, setLoading] = React.useState(false)
+
+    const handlePlaceOrder = async () => {
+        // Early return if user or user._id is not available
+        if (!user?._id || !user?.address) {
+            Alert.alert("Error", "User information is missing");
+            return;
+        }
+
+        try {
+            setLoading(true);
+
+            const transactionResponse = await createTransaction(price, user._id);
+
+            if (!transactionResponse?.success) {
+                Alert.alert('Error', transactionResponse?.message || 'Transaction failed');
+                return;
+            }
+
+            await createOrder(
+                transactionResponse.key,
+                transactionResponse.amount,
+                transactionResponse.order_id,
+                cart,
+                user._id,
+                user.address
+            );
+
+        } catch (error) {
+            Alert.alert('Error', 'Payment process failed');
+            console.error(error);
+        } finally {
+            setLoading(false);
+        }
+    };
+
+
+
+
+
     return (
         <>
             <View style={styles.container}>
@@ -21,20 +62,29 @@ const PlaceOrderButton = () => {
                         </Text>
                     </Text>
                 </View>
-                <TouchableOpacity style={styles.button} onPress={()=>{
-                    setIsVisible(true)
-            
+                <TouchableOpacity
+                    style={styles.button}
+                    onPress={() => {
+                        if (!user) {
+                            setIsVisible(true);
+                            return;
+                        }
 
+                        if (!user.address) {
+                            Alert.alert("Missing Address", "Please add your delivery address");
+                            return;
+                        }
 
-                }}>{
-                    loading?<ActivityIndicator color='black' size='small' />:
-                    <Text style={styles.btnText}>Place Order
-                    </Text>
-            
-                }
-                    
+                        handlePlaceOrder();
+                    }}
+                    disabled={loading}
+                >
+                    {loading ? (
+                        <ActivityIndicator color='black' size='small' />
+                    ) : (
+                        <Text style={styles.btnText}>Place Order</Text>
+                    )}
                 </TouchableOpacity>
-            
             </View>
             {isVisible && <LoginModel visible={isVisible} onClose={() => setIsVisible(false)} />}
         </>
@@ -76,7 +126,7 @@ const styles = StyleSheet.create({
         color: '#3FFF00',
         fontSize: RFValue(13),
         fontWeight: 'bold',
-
     }
 })
+
 export default PlaceOrderButton

@@ -11,14 +11,7 @@ import { formatDate } from '@utils/Constants'
 import { RFValue } from 'react-native-responsive-fontsize'
 import LoginModel from './molecules/LoginModel'
 // Define interfaces for type safety
-interface Order {
-  _id: string;
-  name: string;
-  price: number;
-  quantity: number;
-  totalPrice: number;
-  image: string;
-}
+
 
 interface RouteParams {
   isRefresh?: boolean;
@@ -36,8 +29,8 @@ const Account = () => {
 
     try {
       const data = await getOrderByUserId(user._id)
-      if (data?.orders) {
-        setOrders(data.orders)
+      if (data) {
+        setOrders(data)
       }
     } catch (error) {
       console.error('Error fetching orders:', error)
@@ -60,16 +53,16 @@ const Account = () => {
 
 
 
-  const renderItem = ({ item }: { item: Order }) => {
+  const renderItem = ({ item ,index }: { item: any ,index:number }) => {
     return (
-      <View style={orderStyles.order}>
+      <View style={orderStyles.order} key={index}>
         <FlatList
           data={orders}
-          keyExtractor={(index) => index.toString()}
-          renderItem={({ item }) => {
+          keyExtractor={(item) => item._id.toString()}
+          renderItem={({ item ,index }) => {
             return (
-              <View style={orderStyles.orderContainer}>
-                <Image source={{ uri: item.image }} style={orderStyles.image} />
+              <View style={orderStyles.orderContainer} key={index}>
+                <Image source={{ uri: item.image_uri }} style={orderStyles.image} />
                 <View style={orderStyles.orderDetails}>
                   <Text style={orderStyles.itemName}>✦︎ {item.name}</Text>
                   <Text style={orderStyles.price}>🔖 {'₹'} {item.price} X {item.quantity}</Text>
@@ -83,7 +76,7 @@ const Account = () => {
           contentContainerStyle={orderStyles.orderContainer}
         />
         <Text style={orderStyles.address}>{item.address}</Text>
-        <Text style={orderStyles.deliveryDate}>Delivery by : {formatDate(item.deliveryDate)}
+        <Text style={orderStyles.deliveryDate}>Delivery by : {formatDate(item.delivery_date)}
 
 
         </Text>

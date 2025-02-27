@@ -17,9 +17,9 @@ const Cart = () => {
   const user = useAppSelector(state => state.account.user)
   
 
-  const renderItem = ({ item }) => {
+  const renderItem = ({ item ,index }) => {
     return (
-      <View style={styles.itemContainer}>
+      <View style={styles.itemContainer} key={index}>
         <View style={styles.itemImageContainer}>
         <Image source={{ uri: item.image_uri }} style={styles.itemImage} />
             <GreenUniversalAdd item={item} />
